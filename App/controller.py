@@ -42,7 +42,7 @@ def loadData(catalog):
     Carga los datos de los archivos y cargar los datos en la
     estructura de datos
     """
-    loadArtist(catalog)
+    # loadArtist(catalog)
     loadArtWork(catalog)
     
 def loadArtist(catalog):

@@ -72,11 +72,11 @@ def newCatalog():
                                    maptype='CHAINING',
                                    loadfactor=4.0,
                                    comparefunction=compareArtworkMedium)
+    
     """
     Listas con todos los artistas y obras
     """
     catalog['artists'] = lt.newList(datastructure='ARRAY_LIST')
-    catalog['artworks'] = lt.newList(datastructure='ARRAY_LIST')
     return catalog
     
 
@@ -144,30 +144,29 @@ depth, diameter, height, lenght, weight, width, seat_height, duration):
     return artwork
 
 def addArtwork(catalog, artwork):
-    a = newArtwork(id=artwork["ObjectID"],
-    title=artwork["Title"],
-    constituent_id=artwork["ConstituentID"],
-    date=artwork["Date"],
-    medium=artwork["Medium"],
-    dimensions=artwork["Dimensions"],
-    credit_line=artwork["CreditLine"],
-    accession_number=artwork["AccessionNumber"],
-    classification=artwork["Classification"],
-    department=artwork["Department"],
-    date_aquired=artwork["DateAcquired"],
-    cataloged=artwork["Cataloged"],
-    url=artwork["URL"],
-    circumference=artwork["Circumference (cm)"],
-    depth=artwork["Depth (cm)"],
-    diameter=artwork["Diameter (cm)"],
-    height=artwork["Height (cm)"],
-    lenght=artwork["Length (cm)"],
-    weight=artwork["Weight (kg)"],
-    width=artwork["Width (cm)"],
-    seat_height=artwork["Seat Height (cm)"],
-    duration=artwork["Duration (sec.)"])
-    lt.addLast(catalog['artworks'], a)
-    mp.put(catalog['mediums'],artwork["Medium"],artwork)
+    mediums=catalog['mediums']
+    if (artwork["Medium"] != ''):
+        art_medium=artwork["Medium"]
+    else:
+        art_medium= "Unknown"
+    existMedium = mp.contains(mediums, art_medium)
+    if existMedium:
+        entry = mp.get(mediums, art_medium)
+        medium=me.getValue(entry)
+    else:
+        medium = newMedium(art_medium)
+        mp.put(mediums , art_medium, medium)
+    lt.addLast(medium["artworks"],artwork)
+
+
+def newMedium(art_medium):
+    """
+    Crea la estructura de datos que asocia las obras de arte a un medio
+    """
+    entry={'Medium': "", "artworks": None}
+    entry['Medium'] = art_medium
+    entry["artworks"] = lt.newList('SINGLE_LINKED')
+    return entry
 
 # ==============================
 # Funciones de Comparacion
@@ -184,7 +183,7 @@ def compareArtistsIds(id1,id2):
     else:
         return -1
 
-def compareArtworkMedium(medium,keyname):
+def compareArtworkMedium(keyname,medium):
     """
     Compara dos medios de las obras
     """
@@ -195,6 +194,8 @@ def compareArtworkMedium(medium,keyname):
         return 1
     else:
         return -1
+
+
 # Funciones para creacion de datos
 
 # Funciones de consulta
