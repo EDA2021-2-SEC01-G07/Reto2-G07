@@ -42,7 +42,7 @@ def loadData(catalog):
     Carga los datos de los archivos y cargar los datos en la
     estructura de datos
     """
-    # loadArtist(catalog)
+    loadArtist(catalog)
     loadArtWork(catalog)
     
 def loadArtist(catalog):
@@ -64,6 +64,8 @@ def loadArtWork(catalog):
     for artwork in input_file:
         model.addArtwork(catalog, artwork)
 
+def getOldestByMedium(catalog,medium, display):
+    return model.getOldestByMedium(catalog,medium, display)
 # Funciones para la carga de datos
 
 # Funciones de ordenamiento

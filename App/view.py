@@ -37,7 +37,7 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("2- Get oldest artworks by medium")
 
 catalog = None
 
@@ -63,8 +63,10 @@ while True:
         print("Cargando información de los archivos ....")
         catalog=initCatalog()
         loadData(catalog)
-        print(catalog)
     elif int(inputs[0]) == 2:
+        medium=input("Escriba el medio que desea consultar: ")
+        display=int(input("Escriba la cantidad de obras (mas antiguas) que desea mostrar: "))
+        result=controller.getOldestByMedium(catalog,medium, display)
         pass
 
     else:

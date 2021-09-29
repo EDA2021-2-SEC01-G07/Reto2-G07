@@ -29,7 +29,8 @@ import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
-from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import mergesort as ms
+import datetime as dt
 assert cf
 
 """
@@ -52,7 +53,6 @@ def newCatalog():
 
     catalog = {
         'artists': None,
-        'artworks': None,
         'mediums': None
         
     }
@@ -111,44 +111,11 @@ def addArtist(catalog, artist):
 
     lt.addLast(catalog['artists'], a)
 
-def newArtwork(id, title, constituent_id, date, medium, dimensions, credit_line,
-accession_number, classification, department, date_aquired, cataloged, url, circumference,
-depth, diameter, height, lenght, weight, width, seat_height, duration):
-    artwork = {"id": id,
-    "title": title,
-    "constituent_id": constituent_id,
-    "date": date,
-    "medium": medium,
-    "dimensions": dimensions,
-    "credit_line": credit_line,
-    "accession_number": accession_number,
-    "classification": classification,
-    "department": department,
-    "date_aquired": date_aquired,
-    "cataloged": cataloged,
-    "url": url,
-    "circumference": circumference,
-    "depth": depth,
-    "diameter": diameter,
-    "height": height,
-    "lenght": lenght,
-    "weight": weight,
-    "width": width,
-    "seat_height": seat_height,
-    "duration": duration
-    }
-
-    for key in artwork:
-        if artwork[key] == '':
-            artwork[key] = "Unknown"
-    return artwork
-
 def addArtwork(catalog, artwork):
     mediums=catalog['mediums']
-    if (artwork["Medium"] != ''):
-        art_medium=artwork["Medium"]
-    else:
-        art_medium= "Unknown"
+    
+    art_medium=artwork["Medium"]
+
     existMedium = mp.contains(mediums, art_medium)
     if existMedium:
         entry = mp.get(mediums, art_medium)
@@ -159,13 +126,14 @@ def addArtwork(catalog, artwork):
     lt.addLast(medium["artworks"],artwork)
 
 
+
 def newMedium(art_medium):
     """
     Crea la estructura de datos que asocia las obras de arte a un medio
     """
     entry={'Medium': "", "artworks": None}
     entry['Medium'] = art_medium
-    entry["artworks"] = lt.newList('SINGLE_LINKED')
+    entry["artworks"] = lt.newList('ARRAY_LIST')
     return entry
 
 # ==============================
@@ -195,11 +163,26 @@ def compareArtworkMedium(keyname,medium):
     else:
         return -1
 
+def cmpArtworksByDates(artist1,artist2):
+    return int(artist1["Date"]) < int(artist2["Date"])
+
 
 # Funciones para creacion de datos
-
+def textToDate(text):
+    if text!="Unknown":
+        date=text.split("-")
+        date=dt.date(int(date[0]),int(date[1]),int(date[2]))
+        return date
+    else:
+        return dt.date(1,1,1)
 # Funciones de consulta
 
+def getOldestByMedium(catalog,medium, display): 
+    mediums_map=catalog['mediums']
+    artworks=mp.get(mediums_map,medium)['value']['artworks']
+    ms.sort(artworks, cmpArtworksByDates)
+    oldest=lt.subList(artworks,1,display)
+    return oldest
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
