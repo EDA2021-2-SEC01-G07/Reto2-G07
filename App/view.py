@@ -20,9 +20,11 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+import prettytable
 import config as cf
 import sys
 import controller
+from prettytable import PrettyTable
 from DISClib.ADT import list as lt
 assert cf
 
@@ -67,7 +69,12 @@ while True:
         medium=input("Escriba el medio que desea consultar: ")
         display=int(input("Escriba la cantidad de obras (mas antiguas) que desea mostrar: "))
         result=controller.getOldestByMedium(catalog,medium, display)
-        pass
+        
+        table=PrettyTable(hrules=prettytable.ALL)
+        table.field_names = ["Title", "ConstituentID", "Date", "Medium", "Dimensions", "CreditLine"]
+        for row in lt.iterator(result):
+            table.add_row([row["Title"], row["ConstituentID"], row["Date"], row["Medium"], row["Dimensions"], row["CreditLine"]])
+        print(table)
 
     else:
         sys.exit(0)
