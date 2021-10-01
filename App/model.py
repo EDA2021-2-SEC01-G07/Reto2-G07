@@ -69,14 +69,22 @@ def newCatalog():
     Este indice crea un map cuya llave es el metodo utilizado para la obra
     """
     catalog['mediums'] = mp.newMap(800,
-                                   maptype='CHAINING',
-                                   loadfactor=4.0,
+                                   maptype='PROBING',
+                                   loadfactor=0.8,
                                    comparefunction=compareArtworkMedium)
     
+    """
+    Este indice crea un map cuya llave es el metodo utilizado para la obra
+    """
+    catalog['nationality'] = mp.newMap(800,
+                                   maptype='PROBING',
+                                   loadfactor=0.8,
+                                   comparefunction=compareArtistNatio)
     """
     Listas con todos los artistas y obras
     """
     catalog['artists'] = lt.newList(datastructure='ARRAY_LIST')
+    catalog['artworks'] = lt.newList(datastructure='ARRAY_LIST')
     return catalog
     
 
@@ -97,6 +105,37 @@ def newArtist(id, name, biography, nationality, gender, begin_date, end_date, wi
         if artist[key] == "":
             artist[key] = "Unknown"
     return artist
+def newArtwork(id, title, constituent_id, date, medium, dimensions, credit_line,
+accession_number, classification, department, date_aquired, cataloged, url, circumference,
+depth, diameter, height, lenght, weight, width, seat_height, duration):
+    artwork = {"id": id,
+    "title": title,
+    "constituent_id": constituent_id,
+    "date": date,
+    "medium": medium,
+    "dimensions": dimensions,
+    "credit_line": credit_line,
+    "accession_number": accession_number,
+    "classification": classification,
+    "department": department,
+    "date_aquired": date_aquired,
+    "cataloged": cataloged,
+    "url": url,
+    "circumference": circumference,
+    "depth": depth,
+    "diameter": diameter,
+    "height": height,
+    "lenght": lenght,
+    "weight": weight,
+    "width": width,
+    "seat_height": seat_height,
+    "duration": duration
+    }
+
+    for key in artwork:
+        if artwork[key] == '':
+            artwork[key] = "Unknown"
+    return artwork
 
 def addArtist(catalog, artist):
     a = newArtist(id=artist["ConstituentID"],
@@ -108,10 +147,46 @@ def addArtist(catalog, artist):
     end_date=artist["EndDate"],
     wiki_id=artist["Wiki QID"],
     ulan=artist["ULAN"])
-
     lt.addLast(catalog['artists'], a)
 
+    nationalities=catalog['nationality']
+    artist_natio=artist["Nationality"]
+    
+    existNationality = mp.contains(nationalities,artist_natio)
+    if existNationality:
+        entry=mp.get(nationalities,artist_natio)
+        natio = me.getValue(entry)
+    else:
+        natio = newNationality(artist_natio)
+        mp.put(nationalities, artist_natio, natio)
+    lt.addLast(natio['artists'],artist)
+   
+
 def addArtwork(catalog, artwork):
+    a = newArtwork(id=artwork["ObjectID"],
+    title=artwork["Title"],
+    constituent_id=artwork["ConstituentID"],
+    date=artwork["Date"],
+    medium=artwork["Medium"],
+    dimensions=artwork["Dimensions"],
+    credit_line=artwork["CreditLine"],
+    accession_number=artwork["AccessionNumber"],
+    classification=artwork["Classification"],
+    department=artwork["Department"],
+    date_aquired=artwork["DateAcquired"],
+    cataloged=artwork["Cataloged"],
+    url=artwork["URL"],
+    circumference=artwork["Circumference (cm)"],
+    depth=artwork["Depth (cm)"],
+    diameter=artwork["Diameter (cm)"],
+    height=artwork["Height (cm)"],
+    lenght=artwork["Length (cm)"],
+    weight=artwork["Weight (kg)"],
+    width=artwork["Width (cm)"],
+    seat_height=artwork["Seat Height (cm)"],
+    duration=artwork["Duration (sec.)"])
+    lt.addLast(catalog['artworks'], a)
+
     mediums=catalog['mediums']
     
     art_medium=artwork["Medium"]
@@ -136,6 +211,14 @@ def newMedium(art_medium):
     entry["artworks"] = lt.newList('ARRAY_LIST')
     return entry
 
+def newNationality(artist_natio):
+    """
+    Crea la estructura de datos que asocia las nacionalidades a un artista
+    """
+    entry={'Nationality': "", "artists": None}
+    entry['Nationality'] = artist_natio
+    entry["artists"] = lt.newList('ARRAY_LIST')
+    return entry
 # ==============================
 # Funciones de Comparacion
 # ==============================
@@ -156,6 +239,18 @@ def compareArtworkMedium(keyname,medium):
     Compara dos medios de las obras
     """
     authentry = me.getKey(medium)
+    if (keyname == authentry):
+        return 0
+    elif (keyname > authentry):
+        return 1
+    else:
+        return -1
+
+def compareArtistNatio(keyname,nationality):
+    """
+    Compara dos nacionalidades de los artistas
+    """
+    authentry = me.getKey(nationality)
     if (keyname == authentry):
         return 0
     elif (keyname > authentry):

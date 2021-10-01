@@ -24,6 +24,7 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+import time
 assert cf
 
 
@@ -61,12 +62,18 @@ while True:
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
         print("Cargando información de los archivos ....")
+        start_time = time.process_time()
         catalog=initCatalog()
         loadData(catalog)
+        end_time=(time.process_time() - start_time)*1000
+        print("The processing time is: ",end_time, " ms.")
+        
+
     elif int(inputs[0]) == 2:
         medium=input("Escriba el medio que desea consultar: ")
         display=int(input("Escriba la cantidad de obras (mas antiguas) que desea mostrar: "))
         result=controller.getOldestByMedium(catalog,medium, display)
+        
         pass
 
     else:
