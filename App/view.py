@@ -40,7 +40,11 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- Get oldest artworks by medium")
+    print("2- Obtener ultimas obras por medio")
+    print("3- (Req1) Listar cronologicamente los artistas")
+    print("4- (Req2) Listar cronologicamente las adquisiciones")
+    print("5- (Req3) Clasificar obras de artista por tecnica")
+    print("6- (Req4) Clasificar obras por nacionalidad")
 
 catalog = None
 
@@ -68,6 +72,8 @@ while True:
         catalog=initCatalog()
         loadData(catalog)
         end_time=(time.process_time() - start_time)*1000
+        print('Numero de artistas cargados: ' + str(lt.size(catalog['artists'])))
+        print('Numero de obras cargadas: ' + str(lt.size(catalog['artworks']))+"\n")
         print("The processing time is: ",end_time, " ms.")
         
 
@@ -82,6 +88,7 @@ while True:
             table.add_row([row["Title"], row["ConstituentID"], row["Date"], row["Medium"], row["Dimensions"], row["CreditLine"]])
         print(table)
 
+    
     else:
         sys.exit(0)
 sys.exit(0)
