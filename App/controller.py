@@ -71,3 +71,5 @@ def getOldestByMedium(catalog,medium, display):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+def cronologicalArtists(catalog,first,last):
+    return model.cronologicalArtists(catalog,first,last)

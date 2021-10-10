@@ -69,7 +69,7 @@ def newCatalog():
     Este indice crea un map cuya llave es el metodo utilizado para la obra
     """
     catalog['mediums'] = mp.newMap(800,
-                                   maptype='PROBING',
+                                   maptype='CHAINING',
                                    loadfactor=0.8,
                                    comparefunction=compareArtworkMedium)
     
@@ -77,9 +77,13 @@ def newCatalog():
     Este indice crea un map cuya llave es el metodo utilizado para la obra
     """
     catalog['nationality'] = mp.newMap(800,
-                                   maptype='PROBING',
+                                   maptype='CHAINING',
                                    loadfactor=0.8,
                                    comparefunction=compareArtistNatio)
+    catalog['years'] =  mp.newMap(800,
+                                   maptype='CHAINING',
+                                   loadfactor=0.8,
+                                   comparefunction=compareArtistDate)
     """
     Listas con todos los artistas y obras
     """
@@ -149,18 +153,27 @@ def addArtist(catalog, artist):
     ulan=artist["ULAN"])
     lt.addLast(catalog['artists'], a)
 
-    nationalities=catalog['nationality']
+    nationalities=catalog['nationality']#Crear map con indice de nacionalidad
     artist_natio=artist["Nationality"]
-    
-    existNationality = mp.contains(nationalities,artist_natio)
+    existNationality = mp.contains(nationalities,artist_natio) #Valor booleano para saber si ya se creo la nacionalidad
     if existNationality:
         entry=mp.get(nationalities,artist_natio)
         natio = me.getValue(entry)
     else:
-        natio = newNationality(artist_natio)
-        mp.put(nationalities, artist_natio, natio)
-    lt.addLast(natio['artists'],artist)
-   
+        natio = newNationality(artist_natio) #Crea un diccionaro con llave nacionalidad y valor una lista vacia
+        mp.put(nationalities, artist_natio, natio) # Se mete el artista en el mapa 
+    lt.addLast(natio['artists'],artist)#Añade toda la informacion del artista bajo la llave de su nacionalidad.
+    
+    years=catalog['years']  #Crea un mapa con indice por años de nacimiento de los artistas
+    artist_year = artist['BeginDate']
+    existYear = mp.contains(years,artist_year) 
+    if existYear:
+        entry = mp.get(years,artist_year)
+        year = me.getValue(entry)
+    else:
+        year=newArtistYear(artist_year)
+        mp.put(years,artist_year,year)
+    lt.addLast(year['artists'],artist)
 
 def addArtwork(catalog, artwork):
     a = newArtwork(id=artwork["ObjectID"],
@@ -187,10 +200,8 @@ def addArtwork(catalog, artwork):
     duration=artwork["Duration (sec.)"])
     lt.addLast(catalog['artworks'], a)
 
-    mediums=catalog['mediums']
-    
+    mediums=catalog['mediums']#Crear map con indice de medio
     art_medium=artwork["Medium"]
-
     existMedium = mp.contains(mediums, art_medium)
     if existMedium:
         entry = mp.get(mediums, art_medium)
@@ -205,6 +216,7 @@ def addArtwork(catalog, artwork):
 def newMedium(art_medium):
     """
     Crea la estructura de datos que asocia las obras de arte a un medio
+    'artworks' es una lista a la que se añaden todas las obras que cumplan el criterio de la llave-
     """
     entry={'Medium': "", "artworks": None}
     entry['Medium'] = art_medium
@@ -214,9 +226,20 @@ def newMedium(art_medium):
 def newNationality(artist_natio):
     """
     Crea la estructura de datos que asocia las nacionalidades a un artista
+    'artists' es una lista a la que se añaden todos los artistas que cumplan el criterio de la llave-
     """
     entry={'Nationality': "", "artists": None}
     entry['Nationality'] = artist_natio
+    entry["artists"] = lt.newList('ARRAY_LIST')
+    return entry
+
+def newArtistYear(artist_year):
+    """
+    Crea la estructura de datos que asocia el año de nacimiento (begindate) a un artista.
+    'artists' es una lista a la que se añaden todos los artistas que cumplan el criterio de la llave-
+    """
+    entry={'BeginDate': "", "artists": None}
+    entry['BeginDate'] = artist_year
     entry["artists"] = lt.newList('ARRAY_LIST')
     return entry
 # ==============================
@@ -258,6 +281,18 @@ def compareArtistNatio(keyname,nationality):
     else:
         return -1
 
+def compareArtistDate(keyname,beginDate):
+    """
+    Compara dos años de nacimiento de los artistas
+    """
+    authentry = me.getKey(beginDate)
+    if (keyname == authentry):
+        return 0
+    elif (keyname > authentry):
+        return 1
+    else:
+        return -1
+
 def cmpArtworksByDates(artist1,artist2):
     return int(artist1["Date"]) < int(artist2["Date"])
 
@@ -278,6 +313,35 @@ def getOldestByMedium(catalog,medium, display):
     ms.sort(artworks, cmpArtworksByDates)
     oldest=lt.subList(artworks,1,display)
     return oldest
+
+def cronologicalArtists(catalog,first,last):
+    
+    matchingArtists=lt.newList('ARRAY_LIST')
+    while first<=last:
+        date=str(first)
+        pair=mp.get(catalog['years'],date)
+        artists=me.getValue(pair)['artists']
+        for a in lt.iterator(artists):
+            lt.addLast(matchingArtists,a)    
+        first+=1
+    ms.sort(matchingArtists, cmpArtistByDate)
+    joined=lt.newList(datastructure="ARRAY_LIST")
+    first=lt.subList(matchingArtists,1,3)
+    last=lt.subList(matchingArtists,lt.size(matchingArtists)-3,3)
+    for i in lt.iterator(first):
+        lt.addLast(joined,i)
+    for n in lt.iterator(last):
+        lt.addLast(joined,n)
+    return lt.size(matchingArtists), joined
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
+def cmpArtistByDate(artist1, artist2)->bool: 
+    """ 
+    Devuelve verdadero (True) si el 'DateAcquired' de artwork1 es menores que el de 
+    artwork2 
+    Args: 
+        artwork1: informacion de la primera obra que incluye su valor 'DateAcquired' 
+        artwork2: informacion de la segunda obra que incluye su valor 'DateAcquired' 
+    """
+    return artist1["BeginDate"] < artist2["BeginDate"]
