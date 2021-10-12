@@ -42,11 +42,12 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- Obtener ultimas obras por medio")
-    print("3- (Req1) Listar cronologicamente los artistas")
-    print("4- (Req2) Listar cronologicamente las adquisiciones")
-    print("5- (Req3) Clasificar obras de artista por tecnica")
-    print("6- (Req4) Clasificar obras por nacionalidad")
+    print("2- (Lab5) Obtener ultimas obras por medio")
+    print('3- (Lab6) Numero total de obras por nacionalidad')
+    print("4- (Req1) Listar cronologicamente los artistas")
+    print("5- (Req2) Listar cronologicamente las adquisiciones")
+    print("6- (Req3) Clasificar obras de artista por tecnica")
+    print("7- (Req4) Clasificar obras por nacionalidad")
 
 catalog = None
 
@@ -73,6 +74,7 @@ while True:
         start_time = time.process_time()
         catalog=initCatalog()
         loadData(catalog)
+        print(catalog['artist_id'])
         end_time=(time.process_time() - start_time)*1000
         print('Numero de artistas cargados: ' + str(lt.size(catalog['artists'])))
         print('Numero de obras cargadas: ' + str(lt.size(catalog['artworks']))+"\n")
@@ -90,7 +92,7 @@ while True:
             table.add_row([row["Title"], row["ConstituentID"], row["Date"], row["Medium"], row["Dimensions"], row["CreditLine"]])
         print(table)
 
-    elif int(inputs[0])== 3:
+    elif int(inputs[0])== 4:
         #printCronologicallyArtists
         first=int(input("Año inicial: "))
         last=int(input("Año final: "))
