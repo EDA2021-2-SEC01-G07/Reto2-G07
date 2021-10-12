@@ -44,7 +44,7 @@ def loadData(catalog):
     """
     loadArtist(catalog)
     loadArtWork(catalog)
-    # model.loadNationality(catalog)
+    
     
 def loadArtist(catalog):
     """

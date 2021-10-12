@@ -174,6 +174,7 @@ def addArtist(catalog, artist):
         mp.put(ids,artist_id,id)
     lt.addLast(id['artists'],artist)
 
+    loadNationality(catalog, artist)
     years=catalog['years']  #Crea un mapa con indice por años de nacimiento de los artistas
     artist_year = artist['BeginDate']
     existYear = mp.contains(years,artist_year) #Valor booleano para saber si ya se creo la nacionalidad
@@ -186,16 +187,34 @@ def addArtist(catalog, artist):
     lt.addLast(year['artists'],artist)#Añade toda la informacion del artista bajo la llave de su nacionalidad.
 
 
-def loadNationality(catalog):
+def loadNationality(catalog, artist):
     nationalities=catalog['nationality']
-    artist_natio=catalog['artists']["Nationality"]
-    existNationality = mp.contains(nationalities,artist_natio) 
-    if existNationality:
-        entry=mp.get(nationalities,artist_natio)
-        natio = me.getValue(entry)
-    else:
-        natio = newNationality(artist_natio) 
-        mp.put(nationalities, artist_natio, natio) 
+    artist_natio=catalog['artists']["nationality"]
+    artist_map=catalog['artist_id']
+    artworks=catalog['artworks']
+
+    for artwork in lt.iterator(artworks):
+        code=artwork["constituent_id"] 
+        code=code[1:-1].replace(" ","").split(",")
+        for artist_id in code:
+            nationality=artist_map[artist_id]["Nationality"]
+            if nationality=="" or nationality =="Nationality unknown":
+                nationality="Unknown"
+
+            if mp.contains(nationalities,nationality):
+                entry=mp.get(nationalities,artist_natio)
+                natio = me.getValue(entry)
+            else:
+                natio = newNationality(artist_natio) 
+                mp.put(nationalities, artist_natio, natio) 
+    lt.addLast(natio['artworks'],artist)
+    # existNationality = mp.contains(nationalities,artist_natio) 
+    # if existNationality:
+    #     entry=mp.get(nationalities,artist_natio)
+    #     natio = me.getValue(entry)
+    # else:
+    #     natio = newNationality(artist_natio) 
+    #     mp.put(nationalities, artist_natio, natio) 
     # lt.addLast(natio['artworks'],artist)
     # print(nationalities)
 
