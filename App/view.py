@@ -74,7 +74,7 @@ while True:
         start_time = time.process_time()
         catalog=initCatalog()
         loadData(catalog)
-        print(catalog['artist_id'])
+        print(catalog['nationality'])
         end_time=(time.process_time() - start_time)*1000
         print('Numero de artistas cargados: ' + str(lt.size(catalog['artists'])))
         print('Numero de obras cargadas: ' + str(lt.size(catalog['artworks']))+"\n")
@@ -91,9 +91,12 @@ while True:
         for row in lt.iterator(result):
             table.add_row([row["Title"], row["ConstituentID"], row["Date"], row["Medium"], row["Dimensions"], row["CreditLine"]])
         print(table)
-
+    
+    elif int(inputs[0])== 3:
+        nationality=input('Nacionalidad a buscar: ')
+        result=controller.getTotalNationalities(catalog,nationality)
+        print(result)
     elif int(inputs[0])== 4:
-        #printCronologicallyArtists
         first=int(input("Año inicial: "))
         last=int(input("Año final: "))
         start_time = time.process_time()

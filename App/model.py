@@ -25,6 +25,7 @@
  """
 
 
+import sys
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -165,16 +166,9 @@ def addArtist(catalog, artist):
 
     ids=catalog['artist_id']
     artist_id = artist['ConstituentID']
-    existId = mp.contains(ids,artist_id)
-    if existId:
-        entry = mp.get(ids, artist_id)
-        id = me.getValue(entry)
-    else:
-        id=newArtistId(artist_id)
-        mp.put(ids,artist_id,id)
-    lt.addLast(id['artists'],artist)
+    mp.put(ids,artist_id,artist)
 
-    loadNationality(catalog, artist)
+    
     years=catalog['years']  #Crea un mapa con indice por años de nacimiento de los artistas
     artist_year = artist['BeginDate']
     existYear = mp.contains(years,artist_year) #Valor booleano para saber si ya se creo la nacionalidad
@@ -187,37 +181,27 @@ def addArtist(catalog, artist):
     lt.addLast(year['artists'],artist)#Añade toda la informacion del artista bajo la llave de su nacionalidad.
 
 
-def loadNationality(catalog, artist):
+def loadNationality(catalog, artwork):
     nationalities=catalog['nationality']
-    artist_natio=catalog['artists']["nationality"]
     artist_map=catalog['artist_id']
     artworks=catalog['artworks']
-
     for artwork in lt.iterator(artworks):
         code=artwork["constituent_id"] 
         code=code[1:-1].replace(" ","").split(",")
         for artist_id in code:
-            nationality=artist_map[artist_id]["Nationality"]
+            nationality=me.getValue(mp.get(artist_map,artist_id))["Nationality"]
             if nationality=="" or nationality =="Nationality unknown":
                 nationality="Unknown"
 
             if mp.contains(nationalities,nationality):
-                entry=mp.get(nationalities,artist_natio)
+                entry = mp.get(nationalities,nationality)
                 natio = me.getValue(entry)
             else:
-                natio = newNationality(artist_natio) 
-                mp.put(nationalities, artist_natio, natio) 
-    lt.addLast(natio['artworks'],artist)
-    # existNationality = mp.contains(nationalities,artist_natio) 
-    # if existNationality:
-    #     entry=mp.get(nationalities,artist_natio)
-    #     natio = me.getValue(entry)
-    # else:
-    #     natio = newNationality(artist_natio) 
-    #     mp.put(nationalities, artist_natio, natio) 
-    # lt.addLast(natio['artworks'],artist)
-    # print(nationalities)
-
+                natio = lt.newList('ARRAY_LIST')
+                mp.put(nationalities, nationality, natio) 
+            
+            lt.addLast(natio,artwork)
+        
 
 def addArtwork(catalog, artwork):
     a = newArtwork(id=artwork["ObjectID"],
@@ -243,7 +227,7 @@ def addArtwork(catalog, artwork):
     seat_height=artwork["Seat Height (cm)"],
     duration=artwork["Duration (sec.)"])
     lt.addLast(catalog['artworks'], a)
-
+    loadNationality(catalog, artwork)
     mediums=catalog['mediums']#Crear map con indice de medio
     art_medium=artwork["Medium"]
     existMedium = mp.contains(mediums, art_medium)
@@ -251,9 +235,9 @@ def addArtwork(catalog, artwork):
         entry = mp.get(mediums, art_medium)
         medium=me.getValue(entry)
     else:
-        medium = newMedium(art_medium)
+        medium = lt.newList('ARRAY_LIST')
         mp.put(mediums , art_medium, medium)
-    lt.addLast(medium["artworks"],artwork)
+    lt.addLast(medium,artwork)
 
 
 
@@ -396,6 +380,12 @@ def cronologicalArtists(catalog,first,last):
     for n in lt.iterator(last):
         lt.addLast(joined,n)
     return lt.size(matchingArtists), joined
+
+def getTotalNationalities(catalog,nationality):
+    natio=me.getValue(mp.get(catalog['nationality'],nationality))
+    print(mp.valueSet(catalog['nationality']))
+    natio_size=lt.size(natio)
+    return natio_size
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento

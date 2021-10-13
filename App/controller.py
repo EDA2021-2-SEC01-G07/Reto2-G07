@@ -74,3 +74,6 @@ def getOldestByMedium(catalog,medium, display):
 # Funciones de consulta sobre el catálogo
 def cronologicalArtists(catalog,first,last):
     return model.cronologicalArtists(catalog,first,last)
+
+def getTotalNationalities(catalog,nationality):
+    return model.getTotalNationalities(catalog,nationality)
