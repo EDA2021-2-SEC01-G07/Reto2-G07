@@ -181,26 +181,28 @@ def addArtist(catalog, artist):
     lt.addLast(year['artists'],artist)#Añade toda la informacion del artista bajo la llave de su nacionalidad.
 
 
-def loadNationality(catalog, artwork):
+def loadNationality(catalog):
     nationalities=catalog['nationality']
     artist_map=catalog['artist_id']
     artworks=catalog['artworks']
     for artwork in lt.iterator(artworks):
         code=artwork["constituent_id"] 
         code=code[1:-1].replace(" ","").split(",")
+        
         for artist_id in code:
-            nationality=me.getValue(mp.get(artist_map,artist_id))["Nationality"]
-            if nationality=="" or nationality =="Nationality unknown":
-                nationality="Unknown"
+            artist_nationality=me.getValue(mp.get(artist_map,artist_id))["Nationality"]
+            if artist_nationality=="" or artist_nationality =="Nationality unknown":
+                artist_nationality="Unknown"
 
-            if mp.contains(nationalities,nationality):
-                entry = mp.get(nationalities,nationality)
+            if mp.contains(nationalities,artist_nationality):
+                entry = mp.get(nationalities,artist_nationality)
                 natio = me.getValue(entry)
             else:
                 natio = lt.newList('ARRAY_LIST')
-                mp.put(nationalities, nationality, natio) 
+                mp.put(nationalities, artist_nationality, natio) 
             
             lt.addLast(natio,artwork)
+           
         
 
 def addArtwork(catalog, artwork):
@@ -227,7 +229,6 @@ def addArtwork(catalog, artwork):
     seat_height=artwork["Seat Height (cm)"],
     duration=artwork["Duration (sec.)"])
     lt.addLast(catalog['artworks'], a)
-    loadNationality(catalog, artwork)
     mediums=catalog['mediums']#Crear map con indice de medio
     art_medium=artwork["Medium"]
     existMedium = mp.contains(mediums, art_medium)
@@ -383,7 +384,6 @@ def cronologicalArtists(catalog,first,last):
 
 def getTotalNationalities(catalog,nationality):
     natio=me.getValue(mp.get(catalog['nationality'],nationality))
-    print(mp.valueSet(catalog['nationality']))
     natio_size=lt.size(natio)
     return natio_size
 # Funciones utilizadas para comparar elementos dentro de una lista

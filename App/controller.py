@@ -20,6 +20,7 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+from App.model import loadNationality
 import config as cf
 import model
 import csv
@@ -44,6 +45,7 @@ def loadData(catalog):
     """
     loadArtist(catalog)
     loadArtWork(catalog)
+    loadNationality(catalog)
     
     
 def loadArtist(catalog):

@@ -95,7 +95,7 @@ while True:
     elif int(inputs[0])== 3:
         nationality=input('Nacionalidad a buscar: ')
         result=controller.getTotalNationalities(catalog,nationality)
-        print(result)
+        print('Para la nacionalidad ' + nationality+ ' se encontraron '+ str(result)+' obras de arte.')
     elif int(inputs[0])== 4:
         first=int(input("Año inicial: "))
         last=int(input("Año final: "))
