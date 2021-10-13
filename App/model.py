@@ -58,43 +58,34 @@ def newCatalog():
         
     }
 
-    # """
-    # Este indice crea un map cuya llave es el identificador del artista
-    # """
-    # catalog['artists'] = mp.newMap(10000,
-    #                                maptype='CHAINING',
-    #                                loadfactor=4.0,
-    #                                comparefunction=compareArtistsIds)
-        
     """
-    Este indice crea un map cuya llave es el metodo utilizado para la obra
+    Indices creados en el catalogo por medio, nacionalidad, años de nacimiento para autores, id de artistas y obras
     """
     catalog['mediums'] = mp.newMap(800,
                                    maptype='CHAINING',
                                    loadfactor=0.8,
                                    comparefunction=compareArtworkMedium)
     
-    """
-    Este indice crea un map cuya llave es el metodo utilizado para la obra
-    """
+
     catalog['nationality'] = mp.newMap(800,
                                    maptype='CHAINING',
                                    loadfactor=0.8,
                                    comparefunction=compareArtistNatio)
-    """
-    Este indice crea un map cuya llave es el año de nacimiento de los artistas
-    """
+
     catalog['years'] =  mp.newMap(800,
                                    maptype='CHAINING',
                                    loadfactor=0.8,
                                    comparefunction=compareArtistDate)
-    """
-    Este indice crea un map cuya llave es el metodo utilizado para la obra
-    """
+
     catalog['artist_id'] =  mp.newMap(800,
                                    maptype='CHAINING',
                                    loadfactor=0.8,
                                    comparefunction=compareArtistId)
+    
+    catalog['artwork_id'] =  mp.newMap(800,
+                                maptype='CHAINING',
+                                loadfactor=0.8,
+                                comparefunction=compareArtworkId)
     """
     Listas con todos los artistas y obras
     """
@@ -164,11 +155,8 @@ def addArtist(catalog, artist):
     ulan=artist["ULAN"])
     lt.addLast(catalog['artists'], a)
 
-    ids=catalog['artist_id']
-    artist_id = artist['ConstituentID']
-    mp.put(ids,artist_id,artist)
+    mp.put(catalog['artist_id'],artist['ConstituentID'],artist)
 
-    
     years=catalog['years']  #Crea un mapa con indice por años de nacimiento de los artistas
     artist_year = artist['BeginDate']
     existYear = mp.contains(years,artist_year) #Valor booleano para saber si ya se creo la nacionalidad
@@ -232,6 +220,9 @@ def addArtwork(catalog, artwork):
     mediums=catalog['mediums']#Crear map con indice de medio
     art_medium=artwork["Medium"]
     existMedium = mp.contains(mediums, art_medium)
+
+    mp.put(catalog['artwork_id'],artwork['ObjectID'],artwork)
+
     if existMedium:
         entry = mp.get(mediums, art_medium)
         medium=me.getValue(entry)
@@ -333,6 +324,15 @@ def compareArtistDate(keyname,beginDate):
         return -1
 
 def compareArtistId(keyname,id):
+    authentry = me.getKey(id)
+    if (keyname == authentry):
+        return 0
+    elif (keyname > authentry):
+        return 1
+    else:
+        return -1
+
+def compareArtworkId(keyname,id):
     authentry = me.getKey(id)
     if (keyname == authentry):
         return 0

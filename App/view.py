@@ -74,7 +74,7 @@ while True:
         start_time = time.process_time()
         catalog=initCatalog()
         loadData(catalog)
-        print(catalog['nationality'])
+        print(catalog['artwork_id'])
         end_time=(time.process_time() - start_time)*1000
         print('Numero de artistas cargados: ' + str(lt.size(catalog['artists'])))
         print('Numero de obras cargadas: ' + str(lt.size(catalog['artworks']))+"\n")
