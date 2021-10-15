@@ -61,30 +61,30 @@ def newCatalog():
     """
     Indices creados en el catalogo por medio, nacionalidad, años de nacimiento para autores, id de artistas y obras
     """
-    catalog['mediums'] = mp.newMap(800,
+    catalog['mediums'] = mp.newMap(800, #5500   mp.size[mediums]/4
                                    maptype='CHAINING',
-                                   loadfactor=0.8,
+                                   loadfactor=4,
                                    comparefunction=compareArtworkMedium)
     
 
-    catalog['nationality'] = mp.newMap(800,
+    catalog['nationality'] = mp.newMap(800, #15   mp.size[nationality]//4
                                    maptype='CHAINING',
-                                   loadfactor=0.8,
+                                   loadfactor=4,
                                    comparefunction=compareArtistNatio)
 
-    catalog['years'] =  mp.newMap(800,
-                                   maptype='CHAINING',
-                                   loadfactor=0.8,
+    catalog['years'] =  mp.newMap(800, #250        la diferencia entre fecha mas grande y menor/4
+                                   maptype='CHAINING', 
+                                   loadfactor=4,
                                    comparefunction=compareArtistDate)
 
-    catalog['artist_id'] =  mp.newMap(800,
+    catalog['artist_id'] =  mp.newMap(800, #3900    tamaño archivo/4
                                    maptype='CHAINING',
-                                   loadfactor=0.8,
+                                   loadfactor=4,
                                    comparefunction=compareArtistId)
     
-    catalog['artwork_id'] =  mp.newMap(800,
+    catalog['artwork_id'] =  mp.newMap(800, #38000   tamaño archivo/4
                                 maptype='CHAINING',
-                                loadfactor=0.8,
+                                loadfactor=4,
                                 comparefunction=compareArtworkId)
     """
     Listas con todos los artistas y obras
@@ -154,7 +154,9 @@ def addArtist(catalog, artist):
     wiki_id=artist["Wiki QID"],
     ulan=artist["ULAN"])
     lt.addLast(catalog['artists'], a)
-
+    for key in artist:
+        if artist[key] == '':
+            artist[key] = "Unknown"
     mp.put(catalog['artist_id'],artist['ConstituentID'],artist)
 
     years=catalog['years']  #Crea un mapa con indice por años de nacimiento de los artistas
@@ -217,6 +219,10 @@ def addArtwork(catalog, artwork):
     seat_height=artwork["Seat Height (cm)"],
     duration=artwork["Duration (sec.)"])
     lt.addLast(catalog['artworks'], a)
+    for key in artwork:
+        if artwork[key] == '':
+            artwork[key] = "Unknown"
+
     mediums=catalog['mediums']#Crear map con indice de medio
     art_medium=artwork["Medium"]
     existMedium = mp.contains(mediums, art_medium)
