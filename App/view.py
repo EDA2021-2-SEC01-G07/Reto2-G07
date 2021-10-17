@@ -120,6 +120,34 @@ while True:
         nationalities=controller.sortByNationality(catalog)
         end_time=(time.process_time() - start_time)*1000
 
+        print("="*15+ "Req No. 4 Inputs"+ "="*15)
+        print("Ranking countries by their number of artworks in the MoMA...\n")
+        print("="*15, "Req No. 4 Answers", "="*15)
+        print("The TOP 10 Countries in the MoMA are:")
+        table= pt.PrettyTable()
+        table.field_names=["Nationality","Artworks"]
+        table.hrules = pt.ALL
+        table.max_width=30
+        for n in range(1,11):
+            line=lt.getElement(nationalities[0],n)
+            table.add_row([line["nationality"],line["Artworks"]])
+        print(table)
+        
+        top=lt.getElement(nationalities[0],1)["nationality"]
+        print("\nThe TOP nacionality in the museum is",top,"with", lt.size(nationalities[1]),"unique pieces.")
+        print("The first and last 3 objects in the",top,"artwork list are:")  
+        
+        table2=pt.PrettyTable()
+        table2.field_names=["ObjectID","Title","ArtistsNames","Medium","Date","Dimensions","Department","Classification","URL"]
+        for n in lt.iterator(nationalities[2]):
+            names=str(n["Names"])
+            names=names[1:len(names)-1].replace("'","")
+            table2.add_row([n["id"],n["title"],names,n["medium"],n["date"],n["dimensions"],n["department"],n["classification"],n["url"]])
+        table2.align="l"
+        table2._max_width={"ObjectID":17,"Title":17,"ArtistsNames":18,"Medium":18,"Date":17,"Dimensions":18,"Department":15,"Classification":17,"URL":22}
+        table2.hrules = pt.ALL
+        print(table2)
+        
         print("The processing time is: ",end_time, " ms.")
     else:
         sys.exit(0)

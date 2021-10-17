@@ -396,9 +396,13 @@ def getTotalNationalities(catalog,nationality):
 
 def sortByNationality(catalog):
     """
-    -Returns
+    La funcion cuenta las obras de arte de cada nacionalidad (con repetecion y obras unicas) y saca las 3 
+    primeras y ultimas obras consiguiendo tambien el nombre de sus respectivos artistas.
+    
+    - Returns
     sorted_nationalities: ArrayList ordenado descendentemente con nacionalidad : cantidad de obras de la nacionalidad
     unique_artworks: ArrayList que contiene todas las artworks de la top nacionalidad sin repeticiones (Obras unicas)
+    joined: ArrayList de las 3 primeras y ultimas obras de arte con el nombre de sus autores agregados
     """
     list_of_nationalities=lt.newList(datastructure="ARRAY_LIST")
     natio_map=catalog['nationality']
@@ -428,8 +432,8 @@ def sortByNationality(catalog):
     #Se sacan los primeros y ultimos tres a un array aparte
     
     addArtworkArtists(joined,catalog['artist_id'])
-    print(joined)
-    return sorted_nationalities,unique_artworks
+    
+    return sorted_nationalities,unique_artworks, joined
 
 def addArtworkArtists(artworks,artists_map):
     """
