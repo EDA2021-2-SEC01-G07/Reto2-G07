@@ -79,3 +79,6 @@ def cronologicalArtists(catalog,first,last):
 
 def getTotalNationalities(catalog,nationality):
     return model.getTotalNationalities(catalog,nationality)
+
+def sortByNationality(catalog):
+    return model.sortByNationality(catalog)

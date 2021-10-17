@@ -350,7 +350,8 @@ def compareArtworkId(keyname,id):
 def cmpArtworksByDates(artist1,artist2):
     return int(artist1["Date"]) < int(artist2["Date"])
 
-
+def cmpTotalNationalities(natio1,natio2):
+    return natio1["Artworks"]>natio2["Artworks"]  #Mayor a menor 
 # Funciones para creacion de datos
 def textToDate(text):
     if text!="Unknown":
@@ -359,7 +360,7 @@ def textToDate(text):
         return date
     else:
         return dt.date(1,1,1)
-# Funciones de consulta
+# Funciones de consulta 
 
 def getOldestByMedium(catalog,medium, display): 
     mediums_map=catalog['mediums']
@@ -392,6 +393,55 @@ def getTotalNationalities(catalog,nationality):
     natio=me.getValue(mp.get(catalog['nationality'],nationality))
     natio_size=lt.size(natio)
     return natio_size
+
+def sortByNationality(catalog):
+    """
+    -Returns
+    sorted_nationalities: ArrayList ordenado descendentemente con nacionalidad : cantidad de obras de la nacionalidad
+    unique_artworks: ArrayList que contiene todas las artworks de la top nacionalidad sin repeticiones (Obras unicas)
+    """
+    list_of_nationalities=lt.newList(datastructure="ARRAY_LIST")
+    natio_map=catalog['nationality']
+    keys=mp.keySet(natio_map)  
+
+    for natio in lt.iterator(keys):
+        size=int(lt.size(mp.get(natio_map,natio)['value']))#Esta primera parte la puedo hacer en el modelo 
+        lt.addLast(list_of_nationalities, {"nationality":natio,"Artworks":size})
+    sorted_nationalities=ms.sort(list_of_nationalities,cmpTotalNationalities)
+
+    top=lt.getElement(sorted_nationalities,1)["nationality"]
+    top_nationality_artwork= mp.get(natio_map,top)['value']
+    unique_artworks=lt.newList(datastructure="ARRAY_LIST")
+    artworkID=None
+    for artwork in lt.iterator(top_nationality_artwork):
+        if artwork['id']!=artworkID:
+            lt.addLast(unique_artworks,artwork)
+            artworkID=artwork['id']
+    
+    joined=lt.newList(datastructure="ARRAY_LIST")
+    first=lt.subList(unique_artworks,1,3)
+    last=lt.subList(unique_artworks,lt.size(unique_artworks)-3,3)
+    for i in lt.iterator(first):
+        lt.addLast(joined,i)
+    for n in lt.iterator(last):
+        lt.addLast(joined,n) 
+    #Se sacan los primeros y ultimos tres a un array aparte
+    
+    addArtworkArtists(joined,catalog['artist_id'])
+    print(joined)
+    return sorted_nationalities,unique_artworks
+
+def addArtworkArtists(artworks,artists_map):
+    """
+    Añade al array artworks los nombres de los artistas para cada obra
+    """
+    for artwork in lt.iterator(artworks):
+        names=[]
+        code=artwork["constituent_id"]
+        code=code[1:-1].replace(" ","").split(",")
+        for artist_id in code:
+            names.append(mp.get(artists_map,artist_id)['value']['DisplayName'])
+        artwork["Names"]=names
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento

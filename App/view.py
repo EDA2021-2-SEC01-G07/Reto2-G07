@@ -79,7 +79,6 @@ while True:
         print('Numero de artistas cargados: ' + str(lt.size(catalog['artists'])))
         print('Numero de obras cargadas: ' + str(lt.size(catalog['artworks']))+"\n")
         print("The processing time is: ",end_time, " ms.")
-        print(mp.size(catalog['mediums']))
 
     elif int(inputs[0]) == 2:
         medium=input("Escriba el medio que desea consultar: ")
@@ -114,6 +113,13 @@ while True:
         for line in lt.iterator(cronologicalArtists[1]):
             table.add_row([line["ConstituentID"],line["DisplayName"],line["BeginDate"],line["Nationality"],line["Gender"],line["ArtistBio"],line["Wiki QID"],line["ULAN"]])
         print(table)
+        print("The processing time is: ",end_time, " ms.")
+
+    elif int(inputs[0])== 7:
+        start_time = time.process_time()
+        nationalities=controller.sortByNationality(catalog)
+        end_time=(time.process_time() - start_time)*1000
+
         print("The processing time is: ",end_time, " ms.")
     else:
         sys.exit(0)
