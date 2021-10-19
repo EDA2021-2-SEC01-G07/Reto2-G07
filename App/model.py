@@ -86,6 +86,11 @@ def newCatalog():
                                 maptype='CHAINING',
                                 loadfactor=4,
                                 comparefunction=compareArtworkId)
+
+    catalog['department']=  mp.newMap(23, #38000   tamaño mp.size*/0.5
+                                maptype='PROBING',
+                                loadfactor=0.4,
+                                comparefunction=compareArtworkDep)
     """
     Listas con todos los artistas y obras
     """
@@ -229,12 +234,11 @@ def addArtwork(catalog, artwork):
         if artwork[key] == '':
             artwork[key] = "Unknown"
 
+    mp.put(catalog['artwork_id'],artwork['ObjectID'],artwork) #Crea el indice de artwork_id, al ser unicos no se necesita ninguna lista en el valor.
+
     mediums=catalog['mediums']#Crear map con indice de medio
     art_medium=artwork["Medium"]
     existMedium = mp.contains(mediums, art_medium)
-
-    mp.put(catalog['artwork_id'],artwork['ObjectID'],artwork) #Crea el indice de artwork_id, al ser unicos no se necesita ninguna lista en el valor.
-
     if existMedium:
         entry = mp.get(mediums, art_medium)
         medium=me.getValue(entry)
@@ -242,6 +246,17 @@ def addArtwork(catalog, artwork):
         medium = lt.newList('ARRAY_LIST')
         mp.put(mediums , art_medium, medium)
     lt.addLast(medium,artwork)
+
+    departments=catalog['department']
+    art_department=artwork['Department']
+    existDepartment = mp.contains(departments, art_department)
+    if existDepartment:
+        entry=mp.get(departments,art_department)
+        department=me.getValue(entry)
+    else:
+        department=lt.newList('ARRAY_LIST')
+        mp.put(departments,art_department,department)
+    lt.addLast(department,artwork)
 
 
 
@@ -346,6 +361,15 @@ def compareArtistId(keyname,id):
 
 def compareArtworkId(keyname,id):
     authentry = me.getKey(id)
+    if (keyname == authentry):
+        return 0
+    elif (keyname > authentry):
+        return 1
+    else:
+        return -1
+
+def compareArtworkDep(keyname,department):
+    authentry = me.getKey(department)
     if (keyname == authentry):
         return 0
     elif (keyname > authentry):
