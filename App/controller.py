@@ -52,7 +52,7 @@ def loadArtist(catalog):
     """
     Carga la información que asocia tags con libros.
     """
-    artistfiles = cf.data_dir + 'Artists-utf8-small.csv'
+    artistfiles = cf.data_dir + 'Artists-utf8-large.csv'
     input_file = csv.DictReader(open(artistfiles, encoding='utf-8'))
     for authors in input_file:
         model.addArtist(catalog, authors)
@@ -62,7 +62,7 @@ def loadArtWork(catalog):
     """
     Carga la información que asocia tags con libros.
     """
-    artfiles = cf.data_dir + 'Artworks-utf8-small.csv'
+    artfiles = cf.data_dir + 'Artworks-utf8-large.csv'
     input_file = csv.DictReader(open(artfiles, encoding='utf-8'))
     for artwork in input_file:
         model.addArtwork(catalog, artwork)

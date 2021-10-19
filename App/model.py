@@ -61,28 +61,28 @@ def newCatalog():
     """
     Indices creados en el catalogo por medio, nacionalidad, años de nacimiento para autores, id de artistas y obras
     """
-    catalog['mediums'] = mp.newMap(800, #5500   mp.size[mediums]/4
+    catalog['mediums'] = mp.newMap(5500, #5500   mp.size[mediums]/4
                                    maptype='CHAINING',
                                    loadfactor=4,
                                    comparefunction=compareArtworkMedium)
     
 
-    catalog['nationality'] = mp.newMap(800, #15   mp.size[nationality]//4
+    catalog['nationality'] = mp.newMap(15, #15   mp.size[nationality]//4
                                    maptype='CHAINING',
                                    loadfactor=4,
                                    comparefunction=compareArtistNatio)
 
-    catalog['years'] =  mp.newMap(800, #250        la diferencia entre fecha mas grande y menor/4
+    catalog['years'] =  mp.newMap(250, #250        la diferencia entre fecha mas grande y menor/4
                                    maptype='CHAINING', 
                                    loadfactor=4,
                                    comparefunction=compareArtistDate)
 
-    catalog['artist_id'] =  mp.newMap(800, #3900    tamaño archivo/4
+    catalog['artist_id'] =  mp.newMap(3900, #3900    tamaño archivo/4
                                    maptype='CHAINING',
                                    loadfactor=4,
                                    comparefunction=compareArtistId)
     
-    catalog['artwork_id'] =  mp.newMap(800, #38000   tamaño archivo/4
+    catalog['artwork_id'] =  mp.newMap(38000, #38000   tamaño archivo/4
                                 maptype='CHAINING',
                                 loadfactor=4,
                                 comparefunction=compareArtworkId)
@@ -157,21 +157,27 @@ def addArtist(catalog, artist):
     for key in artist:
         if artist[key] == '':
             artist[key] = "Unknown"
-    mp.put(catalog['artist_id'],artist['ConstituentID'],artist)
+    mp.put(catalog['artist_id'],artist['ConstituentID'],artist) #Crea el indice de artist_id, al ser unicos no se necesita ninguna lista en el valor.
 
     years=catalog['years']  #Crea un mapa con indice por años de nacimiento de los artistas
     artist_year = artist['BeginDate']
-    existYear = mp.contains(years,artist_year) #Valor booleano para saber si ya se creo la nacionalidad
+    existYear = mp.contains(years,artist_year) #Valor booleano para saber si ya se creo la fecha 
     if existYear:
         entry = mp.get(years,artist_year)
-        year = me.getValue(entry)
+        year = me.getValue(entry) #Obtiene la lista que es el valor bajo la fecha
     else:
-        year=newArtistYear(artist_year)#Crea un diccionaro con llave nacionalidad y valor una lista vacia
-        mp.put(years,artist_year,year)# Se mete el artista en el mapa 
-    lt.addLast(year['artists'],artist)#Añade toda la informacion del artista bajo la llave de su nacionalidad.
+        year=newArtistYear(artist_year)#Crea un diccionaro con llave fecha y valor una lista vacia
+        mp.put(years,artist_year,year)# Se mete la lista bajo la llave 'fecha'
+    lt.addLast(year['artists'],artist)#Añade toda la informacion del artista bajo la llave de su fecha.
 
 
 def loadNationality(catalog):
+    """
+    La funcion crea el indice de nacionalidad en el catalogo
+    Se recorre cada obra de arte y cada codigo de artista que esta en dicha obra.
+        Si no esta se crea un ARRAYLIST 
+        Si ya esta simplemente se le agrega al ARRAYLIST previamente creado.
+    """
     nationalities=catalog['nationality']
     artist_map=catalog['artist_id']
     artworks=catalog['artworks']
@@ -227,7 +233,7 @@ def addArtwork(catalog, artwork):
     art_medium=artwork["Medium"]
     existMedium = mp.contains(mediums, art_medium)
 
-    mp.put(catalog['artwork_id'],artwork['ObjectID'],artwork)
+    mp.put(catalog['artwork_id'],artwork['ObjectID'],artwork) #Crea el indice de artwork_id, al ser unicos no se necesita ninguna lista en el valor.
 
     if existMedium:
         entry = mp.get(mediums, art_medium)
@@ -239,7 +245,7 @@ def addArtwork(catalog, artwork):
 
 
 
-def newMedium(art_medium):
+def newMedium(art_medium): # Estas funciones son para crear unos diccionarios bajo los cuales entraran todos los valores bajo un criterio.
     """
     Crea la estructura de datos que asocia las obras de arte a un medio
     'artworks' es una lista a la que se añaden todas las obras que cumplan el criterio de la llave-
@@ -376,10 +382,10 @@ def cronologicalArtists(catalog,first,last):
         date=str(first)
         pair=mp.get(catalog['years'],date)
         artists=me.getValue(pair)['artists']
-        for a in lt.iterator(artists):
+        for a in lt.iterator(artists): #Recorre el bucket dentro de el valor (Maximo 4 elementos)
             lt.addLast(matchingArtists,a)    
         first+=1
-    ms.sort(matchingArtists, cmpArtistByDate)
+    ms.sort(matchingArtists, cmpArtistByDate) #Mayor complejidad temporal
     joined=lt.newList(datastructure="ARRAY_LIST")
     first=lt.subList(matchingArtists,1,3)
     last=lt.subList(matchingArtists,lt.size(matchingArtists)-2,3)
@@ -409,15 +415,15 @@ def sortByNationality(catalog):
     keys=mp.keySet(natio_map)  
 
     for natio in lt.iterator(keys):
-        size=int(lt.size(mp.get(natio_map,natio)['value']))#Esta primera parte la puedo hacer en el modelo 
+        size=int(lt.size(mp.get(natio_map,natio)['value']))#Saca el tamaña de cada nacionalidad
         lt.addLast(list_of_nationalities, {"nationality":natio,"Artworks":size})
     sorted_nationalities=ms.sort(list_of_nationalities,cmpTotalNationalities)
 
     top=lt.getElement(sorted_nationalities,1)["nationality"]
-    top_nationality_artwork= mp.get(natio_map,top)['value']
+    top_nationality_artwork= mp.get(natio_map,top)['value'] #Saca todas las obras que estan bajo la nacionaldiad mas alta
     unique_artworks=lt.newList(datastructure="ARRAY_LIST")
     artworkID=None
-    for artwork in lt.iterator(top_nationality_artwork):
+    for artwork in lt.iterator(top_nationality_artwork): #Este loop es para quitar repeteciones de obras de artes 
         if artwork['id']!=artworkID:
             lt.addLast(unique_artworks,artwork)
             artworkID=artwork['id']
