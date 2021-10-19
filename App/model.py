@@ -386,6 +386,7 @@ def cronologicalArtists(catalog,first,last):
             lt.addLast(matchingArtists,a)    
         first+=1
     ms.sort(matchingArtists, cmpArtistByDate) #Mayor complejidad temporal
+    
     joined=lt.newList(datastructure="ARRAY_LIST")
     first=lt.subList(matchingArtists,1,3)
     last=lt.subList(matchingArtists,lt.size(matchingArtists)-2,3)
@@ -437,7 +438,7 @@ def sortByNationality(catalog):
         lt.addLast(joined,n) 
     #Se sacan los primeros y ultimos tres a un array aparte
     
-    addArtworkArtists(joined,catalog['artist_id'])
+    addArtworkArtists(joined,catalog['artist_id']) #Añadir nombre de artistas 
     
     return sorted_nationalities,unique_artworks, joined
 
