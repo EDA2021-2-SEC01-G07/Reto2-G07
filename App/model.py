@@ -382,7 +382,7 @@ def cronologicalArtists(catalog,first,last):
     ms.sort(matchingArtists, cmpArtistByDate)
     joined=lt.newList(datastructure="ARRAY_LIST")
     first=lt.subList(matchingArtists,1,3)
-    last=lt.subList(matchingArtists,lt.size(matchingArtists)-3,3)
+    last=lt.subList(matchingArtists,lt.size(matchingArtists)-2,3)
     for i in lt.iterator(first):
         lt.addLast(joined,i)
     for n in lt.iterator(last):
