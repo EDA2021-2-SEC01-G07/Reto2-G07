@@ -150,19 +150,18 @@ while True:
         "Dimensions":18,"Date":17,"DateAcquired":15,"URL":22}
 
         print(table)
-<<<<<<< HEAD
         print("The processing time is: ",end_time, " ms.")
-=======
+
     elif int(inputs[0])== 6:
         artist_name = input("Enter the name of the artist to search: ")
-
+        start_time = time.process_time()
         results = controller.techniquesFromArtist(catalog, artist_name)
 
         id = me.getValue(mp.get(results, "id"))
         total_artworks = me.getValue(mp.get(results, "total_artworks"))
         most_used = me.getValue(mp.get(results, "most_used"))
         ranking_list = me.getValue(mp.get(results, "ranking_list"))
-
+        end_time=(time.process_time() - start_time)*1000
         print("="*15+ "Req No. 3 Inputs"+ "="*15)
         print("Examine the work of the artist named:",artist_name)
         print("="*15, "Req No. 3 Answers", "="*15)
@@ -196,10 +195,11 @@ while True:
             sample_table.add_row([n["id"],n["title"],n["medium"],
             n["date"],n["dimensions"],n["date_aquired"],
             n["department"], n["classification"],n["url"]])
-        
+        sample_table._max_width = {"ObjectID":20, "Title":20, "Medium":20, "Date":20, "Dimensions":20,
+         "DateAcquired":20, "Department":20, "Classification":20, "URL":20}
         print(sample_table)
+        print("The processing time is: ",end_time, " ms.")
 
->>>>>>> bdf671dbe82e23ace4e218e29741d919a1955eeb
     elif int(inputs[0])== 7:
         start_time = time.process_time()
         nationalities=controller.sortByNationality(catalog)

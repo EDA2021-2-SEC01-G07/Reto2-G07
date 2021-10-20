@@ -77,7 +77,7 @@ def newArtist(id, name, biography, nationality, gender, begin_date, end_date, wi
     'ulan': ulan
     }
     for key in artist:
-        if artist[key] == "":
+        if artist[key] == "" or artist[key]=="Nationality unknown":
             artist[key] = "Unknown"
     return artist
 def newArtwork(id, title, constituent_id, date, medium, dimensions, credit_line,
