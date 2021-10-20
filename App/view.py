@@ -122,7 +122,6 @@ while True:
         start = input("Enter the starting date in a YYYY-MM-DD format: ")
         end = input("Enter the ending date in a YYYY-MM-DD format: ")
         start_time = time.process_time()
-        sample, size, purchased = controller.cronologicalArtwork(catalog, start, end)
 
         results = controller.cronologicalArtwork(catalog, start, end)
 
