@@ -120,7 +120,12 @@ while True:
         start = input("Enter the starting date in a YYYY-MM-DD format: ")
         end = input("Enter the ending date in a YYYY-MM-DD format: ")
 
-        sample, size, purchased = controller.cronologicalArtwork(catalog, start, end)
+        results = controller.cronologicalArtwork(catalog, start, end)
+
+        sample = mp.get(results, "sample")
+        size = mp.get(results, "size")
+        artists = mp.get(results, "artists")
+        sample = mp.get(results, "purchased")
 
         print("="*15+ "Req No. 2 Inputs"+ "="*15)
         print(f"Artworks between {start} and {end}")
