@@ -124,7 +124,7 @@ while True:
         start_time = time.process_time()
 
         results = controller.cronologicalArtwork(catalog, start, end)
-
+        end_time=(time.process_time() - start_time)*1000
         sample = me.getValue(mp.get(results, "sample"))
         size = me.getValue(mp.get(results, "size"))
         artists = me.getValue(mp.get(results, "artists"))
@@ -151,7 +151,7 @@ while True:
         "Dimensions":18,"Date":17,"DateAcquired":15,"URL":22}
 
         print(table)
-
+        print("The processing time is: ",end_time, " ms.")
     elif int(inputs[0])== 7:
         start_time = time.process_time()
         nationalities=controller.sortByNationality(catalog)
