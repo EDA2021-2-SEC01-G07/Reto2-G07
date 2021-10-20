@@ -20,7 +20,8 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
-import prettytable as pt 
+import prettytable as pt
+from prettytable.prettytable import ALL 
 import config as cf
 import sys
 import controller
@@ -122,16 +123,32 @@ while True:
 
         results = controller.cronologicalArtwork(catalog, start, end)
 
-        sample = mp.get(results, "sample")
-        size = mp.get(results, "size")
-        artists = mp.get(results, "artists")
-        sample = mp.get(results, "purchased")
+        sample = me.getValue(mp.get(results, "sample"))
+        size = me.getValue(mp.get(results, "size"))
+        artists = me.getValue(mp.get(results, "artists"))
+        purchased = me.getValue(mp.get(results, "purchased"))
 
         print("="*15+ "Req No. 2 Inputs"+ "="*15)
         print(f"Artworks between {start} and {end}")
         print("="*15, "Req No. 2 Answers", "="*15)
         print(f"The MoMA acquired {size} unique pieces between {start} and {end}")
-        print()
+        print(f"With {artists} different artists and purchased {purchased} of them.")
+        print("The first and last 3 artists in the range are...")
+
+        table = pt.PrettyTable(hrules=pt.ALL)
+        table.field_names = ["ObjectID", "Title", "ArtistsNames", "Medium", "Dimensions", "Date", "DateAcquired", "URL"]
+
+        for n in lt.iterator(sample):
+            names=str(n["names"])[1:-1].replace("'","")
+
+            table.add_row([n["id"],n["title"],names,n["medium"],
+            n["dimensions"],n["date"],n["date_aquired"],n["url"]])
+
+        table.align="l"
+        table._max_width={"ObjectID":17,"Title":17,"ArtistsNames":18,"Medium":18,
+        "Dimensions":18,"Date":17,"DateAcquired":15,"URL":22}
+
+        print(table)
 
     elif int(inputs[0])== 7:
         start_time = time.process_time()
@@ -159,8 +176,7 @@ while True:
         table2.field_names=["ObjectID","Title","ArtistsNames","Medium","Date",
         "Dimensions","Department","Classification","URL"]
         for n in lt.iterator(nationalities[2]):
-            names=str(n["names"])
-            names=names[1:len(names)-1].replace("'","")
+            names=str(n["names"])[1:-1].replace("'","")
             table2.add_row([n["id"],n["title"],names,n["medium"],n["date"],
             n["dimensions"],n["department"],n["classification"],n["url"]])
         table2.align="l"

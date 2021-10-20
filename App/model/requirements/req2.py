@@ -12,8 +12,6 @@ def cronologicalArtwork(catalog, begin_date, end_date):
     artworks = lt.newList("ARRAY_LIST")
     purchased = 0
 
-    misc.addArtworkArtists(artworks, catalog["artist_id"])
-
     for artwork in lt.iterator(catalog["artworks"]):
         if artwork["date_aquired"] == "Unknown":
             continue
@@ -22,6 +20,10 @@ def cronologicalArtwork(catalog, begin_date, end_date):
             lt.addLast(artworks,artwork)
             if "purchase" in artwork["credit_line"].lower():
                 purchased+=1
+        
+    misc.addArtworkArtists(artworks, catalog["artist_id"])
+    
+    for artwork in lt.iterator(artworks):
         artists.update(artwork["names"])
     
     ms.sort(artworks, lambda artwork1, artwork2:
