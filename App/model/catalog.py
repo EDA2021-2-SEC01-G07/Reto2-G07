@@ -50,6 +50,11 @@ def newCatalog():
                                 maptype='PROBING',
                                 loadfactor=0.4,
                                 comparefunction=cmp.compareArtworkDep)
+
+    catalog['artist_name']=  mp.newMap(3900, #38000   tamaño archivo/4
+                                maptype='CHAINING',
+                                loadfactor=4,
+                                comparefunction=cmp.compareArtistName)
     """
     Listas con todos los artistas y obras
     """
@@ -123,6 +128,7 @@ def addArtist(catalog, a):
     lt.addLast(catalog['artists'], artist)
 
     mp.put(catalog['artist_id'],artist['id'], artist) #Crea el indice de artist_id, al ser unicos no se necesita ninguna lista en el valor.
+    
     years=catalog['years']  #Crea un mapa con indice por años de nacimiento de los artistas
     artist_year = artist['begin_date']
     existYear = mp.contains(years,artist_year) #Valor booleano para saber si ya se creo la fecha 
@@ -132,6 +138,8 @@ def addArtist(catalog, a):
         year=lt.newList("ARRAY_LIST")#Crea una lista vacia
         mp.put(years,artist_year,year)# Se mete la lista bajo la llave 'fecha'
     lt.addLast(year,artist)#Añade toda la informacion del artista bajo la llave de su fecha.
+
+    mp.put(catalog['artist_name'],artist['name'],artist)
 
 
 def loadNationality(catalog):

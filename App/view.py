@@ -49,6 +49,7 @@ def printMenu():
     print("5- (Req2) Listar cronologicamente las adquisiciones")
     print("6- (Req3) Clasificar obras de artista por tecnica")
     print("7- (Req4) Clasificar obras por nacionalidad")
+    print('8- (Req5) Transportar obras de un departamento')
 
 catalog = None
 
@@ -120,6 +121,8 @@ while True:
     elif int(inputs[0])== 5:
         start = input("Enter the starting date in a YYYY-MM-DD format: ")
         end = input("Enter the ending date in a YYYY-MM-DD format: ")
+        start_time = time.process_time()
+        sample, size, purchased = controller.cronologicalArtwork(catalog, start, end)
 
         results = controller.cronologicalArtwork(catalog, start, end)
 
@@ -188,14 +191,16 @@ while True:
         print("The processing time is: ",end_time, " ms.")
     elif int(inputs[0]) == 8:
         department = input("Department to search: ")
+        start_time = time.process_time()
         results = controller.costFromDepartment(catalog, department)
+        end_time=(time.process_time() - start_time)*1000
         print("="*15, "Req No. 5 Inputs", "="*15)
         print("Estimate the cost to transport all artifacts in", department, "MoMA's department\n")
         print("="*15, "Req No. 5 Answers", "="*15)
 
         length = me.getValue(mp.get(results, "length"))
-        cost = me.getValue(mp.get(results, "cost"))
-        weight = me.getValue(mp.get(results, "weight"))
+        cost = round(me.getValue(mp.get(results, "cost")),2)
+        weight = round(me.getValue(mp.get(results, "weight")),2)
         oldest = me.getValue(mp.get(results, "oldest"))
         expensive = me.getValue(mp.get(results, "expensive"))
 
@@ -206,6 +211,9 @@ while True:
         expensive_table = pt.PrettyTable(hrules=pt.ALL)
         expensive_table.field_names = ["ObjectID", "Title", "ArtistsNames", "Medium", "Date",
          "Dimensions", "Classification", "TransCost (USD)", "URL"]
+        expensive_table._max_width ={'ObjectID':17, 'Title':17,"ArtistsNames":17, 'Medium':17, 'Date':17, 'Dimensions':17,
+     'Classifications':17, 'TransCost (USD)':17, 'URL':17}
+        expensive_table.hrules = pt.ALL
         
         for artwork in lt.iterator(expensive):
             names = str(artwork["names"])[1:-1].replace("'", "")
@@ -213,17 +221,19 @@ while True:
             artwork["dimensions"], artwork["department"], artwork["classification"], artwork["url"]])
         
         print(expensive_table)
-        
+        print("The TOP 5 oldest items to transport are:\n")
         oldest_table = pt.PrettyTable(hrules=pt.ALL)
         oldest_table.field_names = ["ObjectID", "Title", "ArtistsNames", "Medium", "Date",
          "Dimensions", "Classification", "TransCost (USD)", "URL"]
-        
+        oldest_table.hrules = pt.ALL
+        oldest_table._max_width ={'ObjectID':17, 'Title':17,"ArtistsNames":17, 'Medium':17, 'Date':17, 'Dimensions':17,
+     'Classifications':17, 'TransCost (USD)':17, 'URL':17}
         for artwork in lt.iterator(oldest):
             names = str(artwork["names"])[1:-1].replace("'", "")
             oldest_table.add_row([artwork["id"], artwork["title"], names, artwork["medium"], artwork["date"],
             artwork["dimensions"], artwork["department"], artwork["classification"], artwork["url"]])
         
         print(oldest_table)
-
+        print("The processing time is: ",end_time, " ms.")
     else:
         sys.exit(0)

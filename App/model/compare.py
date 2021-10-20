@@ -55,7 +55,15 @@ def compareArtistId(keyname,id):
         return 1
     else:
         return -1
-
+def compareArtistName(keyname,id):
+    authentry = me.getKey(id)
+    if (keyname == authentry):
+        return 0
+    elif (keyname > authentry):
+        return 1
+    else:
+        return -1
+        
 def compareArtworkId(keyname,id):
     authentry = me.getKey(id)
     if (keyname == authentry):
