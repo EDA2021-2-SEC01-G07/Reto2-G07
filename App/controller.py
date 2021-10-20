@@ -20,9 +20,14 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
-from App.model import loadNationality
 import config as cf
-import model
+import model.catalog as ct
+import model.misc as misc
+import model.requirements.req1 as req1
+import model.requirements.req2 as req2
+import model.requirements.req3 as req3
+import model.requirements.req4 as req4
+import model.requirements.req5 as req5
 import csv
 
 
@@ -35,7 +40,7 @@ def initCatalog():
     """
     Llama la funcion de inicializacion del catalogo del modelo.
     """
-    catalog = model.newCatalog()
+    catalog = ct.newCatalog()
     return catalog
 
 def loadData(catalog):
@@ -45,7 +50,7 @@ def loadData(catalog):
     """
     loadArtist(catalog)
     loadArtWork(catalog)
-    model.loadNationality(catalog)
+    ct.loadNationality(catalog)
     
     
 def loadArtist(catalog):
@@ -55,7 +60,7 @@ def loadArtist(catalog):
     artistfiles = cf.data_dir + 'Artists-utf8-large.csv'
     input_file = csv.DictReader(open(artistfiles, encoding='utf-8'))
     for authors in input_file:
-        model.addArtist(catalog, authors)
+        ct.addArtist(catalog, authors)
 
 
 def loadArtWork(catalog):
@@ -65,20 +70,27 @@ def loadArtWork(catalog):
     artfiles = cf.data_dir + 'Artworks-utf8-large.csv'
     input_file = csv.DictReader(open(artfiles, encoding='utf-8'))
     for artwork in input_file:
-        model.addArtwork(catalog, artwork)
+        ct.addArtwork(catalog, artwork)
 
 def getOldestByMedium(catalog,medium, display):
-    return model.getOldestByMedium(catalog,medium, display)
+    return misc.getOldestByMedium(catalog,medium, display)
+
+def getTotalNationalities(catalog,nationality):
+    return misc.getTotalNationalities(catalog,nationality)
+
 # Funciones para la carga de datos
 
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
 def cronologicalArtists(catalog,first,last):
-    return model.cronologicalArtists(catalog,first,last)
+    return req1.cronologicalArtists(catalog,first,last)
 
-def getTotalNationalities(catalog,nationality):
-    return model.getTotalNationalities(catalog,nationality)
+def cronologicalArtwork(catalog, beginDate, endDate):
+    return req2.cronologicalArtwork(catalog, beginDate, endDate)
 
 def sortByNationality(catalog):
-    return model.sortByNationality(catalog)
+    return req4.sortByNationality(catalog)
+
+def costFromDepartment(catalog, department):
+    return req5.costFromDepartment(catalog, department)

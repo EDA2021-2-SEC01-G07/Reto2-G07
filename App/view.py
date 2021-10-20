@@ -74,7 +74,6 @@ while True:
         start_time = time.process_time()
         catalog=initCatalog()
         loadData(catalog)
-        print(catalog['department'])
         end_time=(time.process_time() - start_time)*1000
         print('Numero de artistas cargados: ' + str(lt.size(catalog['artists'])))
         print('Numero de obras cargadas: ' + str(lt.size(catalog['artworks']))+"\n")
@@ -88,7 +87,8 @@ while True:
         table=PrettyTable(hrules=pt.ALL)
         table.field_names = ["Title", "ConstituentID", "Date", "Medium", "Dimensions", "CreditLine"]
         for row in lt.iterator(result):
-            table.add_row([row["Title"], row["ConstituentID"], row["Date"], row["Medium"], row["Dimensions"], row["CreditLine"]])
+            table.add_row([row["Title"], row["ConstituentID"], 
+            row["Date"], row["Medium"], row["Dimensions"], row["CreditLine"]])
         print(table)
     
     elif int(inputs[0])== 3:
@@ -104,16 +104,29 @@ while True:
         print("="*15+ "Req No. 1 Inputs"+ "="*15)
         print("Artist born between "+ str(first)+" and " +str(last))
         print("="*15, "Req No. 1 Answers", "="*15)
-        print('There are '+ str(cronologicalArtists[0]),' born between'+ str(first)+" and " +str(last)+"\n")
+        print('There are',str(cronologicalArtists[0]),'born between',str(first),"and",str(last)+"\n")
 
         print('The first and last 3 artists in range are...')
         table= pt.PrettyTable()
-        table.field_names=["ConstituentID","DisplayName","BeginDate","Nationality","Gender","ArtistBio","Wiki QID","ULAN"]
+        table.field_names=["ConstituentID","DisplayName","BeginDate",
+        "Nationality","Gender","ArtistBio","Wiki QID","ULAN"]
         table.max_width=30
         for line in lt.iterator(cronologicalArtists[1]):
-            table.add_row([line["ConstituentID"],line["DisplayName"],line["BeginDate"],line["Nationality"],line["Gender"],line["ArtistBio"],line["Wiki QID"],line["ULAN"]])
+            table.add_row([line["id"],line["name"],line["begin_date"],
+            line["nationality"],line["gender"],line["biography"],line["wiki_id"],line["ulan"]])
         print(table)
         print("The processing time is: ",end_time, " ms.")
+    elif int(inputs[0])== 5:
+        start = input("Enter the starting date in a YYYY-MM-DD format: ")
+        end = input("Enter the ending date in a YYYY-MM-DD format: ")
+
+        sample, size, purchased = controller.cronologicalArtwork(catalog, start, end)
+
+        print("="*15+ "Req No. 2 Inputs"+ "="*15)
+        print(f"Artworks between {start} and {end}")
+        print("="*15, "Req No. 2 Answers", "="*15)
+        print(f"The MoMA acquired {size} unique pieces between {start} and {end}")
+        print()
 
     elif int(inputs[0])== 7:
         start_time = time.process_time()
@@ -138,17 +151,58 @@ while True:
         print("The first and last 3 objects in the",top,"artwork list are:")  
         
         table2=pt.PrettyTable()
-        table2.field_names=["ObjectID","Title","ArtistsNames","Medium","Date","Dimensions","Department","Classification","URL"]
+        table2.field_names=["ObjectID","Title","ArtistsNames","Medium","Date",
+        "Dimensions","Department","Classification","URL"]
         for n in lt.iterator(nationalities[2]):
-            names=str(n["Names"])
+            names=str(n["names"])
             names=names[1:len(names)-1].replace("'","")
-            table2.add_row([n["id"],n["title"],names,n["medium"],n["date"],n["dimensions"],n["department"],n["classification"],n["url"]])
+            table2.add_row([n["id"],n["title"],names,n["medium"],n["date"],
+            n["dimensions"],n["department"],n["classification"],n["url"]])
         table2.align="l"
-        table2._max_width={"ObjectID":17,"Title":17,"ArtistsNames":18,"Medium":18,"Date":17,"Dimensions":18,"Department":15,"Classification":17,"URL":22}
+        table2._max_width={"ObjectID":17,"Title":17,"ArtistsNames":18,"Medium":18,
+        "Date":17,"Dimensions":18,"Department":15,"Classification":17,"URL":22}
         table2.hrules = pt.ALL
         print(table2)
         
         print("The processing time is: ",end_time, " ms.")
+    elif int(inputs[0]) == 8:
+        department = input("Department to search: ")
+        results = controller.costFromDepartment(catalog, department)
+        print("="*15, "Req No. 5 Inputs", "="*15)
+        print("Estimate the cost to transport all artifacts in", department, "MoMA's department\n")
+        print("="*15, "Req No. 5 Answers", "="*15)
+
+        length = me.getValue(mp.get(results, "length"))
+        cost = me.getValue(mp.get(results, "cost"))
+        weight = me.getValue(mp.get(results, "weight"))
+        oldest = me.getValue(mp.get(results, "oldest"))
+        expensive = me.getValue(mp.get(results, "expensive"))
+
+        print(f"The MoMA is going to transport {length} artifacts from the {department} MoMA's department")
+        print(f"Estimated cargo weigth (kg): {weight}")
+        print(f"Estimated cargo cost (USD): {cost}")
+
+        expensive_table = pt.PrettyTable(hrules=pt.ALL)
+        expensive_table.field_names = ["ObjectID", "Title", "ArtistsNames", "Medium", "Date",
+         "Dimensions", "Classification", "TransCost (USD)", "URL"]
+        
+        for artwork in lt.iterator(expensive):
+            names = str(artwork["names"])[1:-1].replace("'", "")
+            expensive_table.add_row([artwork["id"], artwork["title"], names, artwork["medium"], artwork["date"],
+            artwork["dimensions"], artwork["department"], artwork["classification"], artwork["url"]])
+        
+        print(expensive_table)
+        
+        oldest_table = pt.PrettyTable(hrules=pt.ALL)
+        oldest_table.field_names = ["ObjectID", "Title", "ArtistsNames", "Medium", "Date",
+         "Dimensions", "Classification", "TransCost (USD)", "URL"]
+        
+        for artwork in lt.iterator(oldest):
+            names = str(artwork["names"])[1:-1].replace("'", "")
+            oldest_table.add_row([artwork["id"], artwork["title"], names, artwork["medium"], artwork["date"],
+            artwork["dimensions"], artwork["department"], artwork["classification"], artwork["url"]])
+        
+        print(oldest_table)
+
     else:
         sys.exit(0)
-sys.exit(0)
