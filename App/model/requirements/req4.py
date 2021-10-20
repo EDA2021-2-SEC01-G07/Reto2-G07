@@ -40,6 +40,4 @@ def sortByNationality(catalog):
         lt.addLast(joined,n) 
     #Se sacan los primeros y ultimos tres a un array aparte
     
-    misc.addArtworkArtists(joined,catalog['artist_id']) #Añadir nombre de artistas 
-    
     return sorted_nationalities,unique_artworks, joined

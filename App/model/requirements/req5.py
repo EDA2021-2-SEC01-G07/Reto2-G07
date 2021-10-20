@@ -30,12 +30,10 @@ def costFromDepartment(catalog, department):
 
     ms.sort(artworks, lambda artwork1, artwork2: artwork1["cost"] > artwork2["cost"])
     expensive = lt.subList(artworks, 1, 5)
-    misc.addArtworkArtists(expensive, catalog["artist_id"])
     mp.put(returned_values, "expensive", expensive)
 
     ms.sort(artworks, cmpDates)
     oldest = lt.subList(artworks, 1, 5)
-    misc.addArtworkArtists(oldest, catalog["artist_id"])
     mp.put(returned_values, "oldest", oldest)
 
     mp.put(returned_values, "cost", total_cost)

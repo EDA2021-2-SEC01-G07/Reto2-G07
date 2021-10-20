@@ -12,17 +12,6 @@ def textToDate(text):
     else:
         return dt.date(1,1,1)
 
-def addArtworkArtists(artworks,artists_map):
-    """
-    Añade al array artworks los nombres de los artistas para cada obra
-    """
-    for artwork in lt.iterator(artworks):
-        names=[]
-        code=artwork["constituent_id"]
-        for artist_id in code:
-            names.append(mp.get(artists_map,artist_id)['value']['name'])
-        artwork["names"]=names
-
 def getOldestByMedium(catalog,medium,display): 
     mediums_map=catalog['mediums']
     artworks=mp.get(mediums_map,medium)['value']['artworks']

@@ -99,7 +99,8 @@ depth, diameter, height, lenght, weight, width, seat_height, duration):
     "weight": weight,
     "width": width,
     "seat_height": seat_height,
-    "duration": duration
+    "duration": duration,
+    "names": []
     }
 
     for key in artwork:
@@ -118,6 +119,7 @@ def addArtist(catalog, a):
     end_date=a["EndDate"],
     wiki_id=a["Wiki QID"],
     ulan=a["ULAN"])
+
     lt.addLast(catalog['artists'], artist)
 
     mp.put(catalog['artist_id'],artist['id'], artist) #Crea el indice de artist_id, al ser unicos no se necesita ninguna lista en el valor.
@@ -181,6 +183,9 @@ def addArtwork(catalog, a):
     width=a["Width (cm)"],
     seat_height=a["Seat Height (cm)"],
     duration=a["Duration (sec.)"])
+
+    for artist_id in artwork["constituent_id"]:
+        artwork["names"].append(mp.get(catalog["artist_id"],artist_id)['value']['name'])
 
     lt.addLast(catalog['artworks'], artwork)
 
