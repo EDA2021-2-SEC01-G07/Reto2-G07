@@ -89,6 +89,9 @@ def cronologicalArtists(catalog,first,last):
 def cronologicalArtwork(catalog, beginDate, endDate):
     return req2.cronologicalArtwork(catalog, beginDate, endDate)
 
+def techniquesFromArtist(catalog, artist_name):
+    return req3.techiniquesFromArtist(catalog, artist_name)
+
 def sortByNationality(catalog):
     return req4.sortByNationality(catalog)
 
