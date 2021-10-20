@@ -13,8 +13,8 @@ def cronologicalArtists(catalog,first,last):
         first+=1
     
     joined=lt.newList(datastructure="ARRAY_LIST")
-    first=lt.subList(matchingArtists,lt.size(matchingArtists)-2,3)
-    last=lt.subList(matchingArtists,1,3)
+    last=lt.subList(matchingArtists,lt.size(matchingArtists)-2,3)
+    first=lt.subList(matchingArtists,1,3)
     for i in lt.iterator(first):
         lt.addLast(joined,i)
     for n in lt.iterator(last):
