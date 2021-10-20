@@ -21,7 +21,6 @@
  """
 
 import prettytable as pt
-from prettytable.prettytable import ALL 
 import config as cf
 import sys
 import controller
@@ -151,7 +150,56 @@ while True:
         "Dimensions":18,"Date":17,"DateAcquired":15,"URL":22}
 
         print(table)
+<<<<<<< HEAD
         print("The processing time is: ",end_time, " ms.")
+=======
+    elif int(inputs[0])== 6:
+        artist_name = input("Enter the name of the artist to search: ")
+
+        results = controller.techniquesFromArtist(catalog, artist_name)
+
+        id = me.getValue(mp.get(results, "id"))
+        total_artworks = me.getValue(mp.get(results, "total_artworks"))
+        most_used = me.getValue(mp.get(results, "most_used"))
+        ranking_list = me.getValue(mp.get(results, "ranking_list"))
+
+        print("="*15+ "Req No. 3 Inputs"+ "="*15)
+        print("Examine the work of the artist named:",artist_name)
+        print("="*15, "Req No. 3 Answers", "="*15)
+        print(f"{artist_name} with MoMA ID {id} has {total_artworks} pieces in his/her name at the museum.")
+        print(f"There are {lt.size(ranking_list)} different mediums/techniques in his/her work.")
+
+        print("Her/His top 5 Medium/Techniques are: ")
+
+        ranking_table = pt.PrettyTable(hrules=pt.ALL)
+        ranking_table.field_names = ["MediumName", "Count"]
+
+        for i in range(5):
+            pair = lt.getElement(ranking_list, i+1)
+            ranking_table.add_row([me.getKey(pair), lt.size(me.getValue(pair))])
+        
+        ranking_table._max_width={"MediumName": 20, "Count": 10}
+        print(ranking_table)
+
+        first_pair = lt.getElement(ranking_list, 1)
+
+        print(f"His/Her most used Medium/Technique is: {me.getKey(pair)} with {lt.size(me.getValue(pair))} pieces.")
+        print(f"A sample of {lt.size(me.getValue(pair))} Photogravure from the collection are:")
+
+        sample_table = pt.PrettyTable(hrules=pt.ALL)
+        sample_table.field_names = ["ObjectID", "Title", "Medium", "Date", "Dimensions",
+         "DateAcquired", "Department", "Classification", "URL"]
+        
+        for n in lt.iterator(me.getValue(first_pair)):
+            names=str(n["names"])[1:-1].replace("'","")
+
+            sample_table.add_row([n["id"],n["title"],n["medium"],
+            n["date"],n["dimensions"],n["date_aquired"],
+            n["department"], n["classification"],n["url"]])
+        
+        print(sample_table)
+
+>>>>>>> bdf671dbe82e23ace4e218e29741d919a1955eeb
     elif int(inputs[0])== 7:
         start_time = time.process_time()
         nationalities=controller.sortByNationality(catalog)
